@@ -1,0 +1,19 @@
+{
+    "type": "postgres",
+    "host": "database",
+    "port": "5432",
+    "username": "postgres",
+    "password": "supersecret",
+    "database": "postgres",
+    "migrationsTableName": "migrations",
+    "entities": [
+      "src/database/entities/**/*.ts"
+   ],
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/database/entities",
+      "migrationsDir": "src/migration"
+   }
+  }

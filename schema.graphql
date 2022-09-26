@@ -1,0 +1,276 @@
+"""Exposes a URL that specifies the behaviour of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behaviour of this scalar."""
+  url: String!
+) on SCALAR
+
+type ActivityEntity {
+  id: String!
+  name: String!
+  code: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type CategoryEntity {
+  id: String!
+  name: String!
+  code: String!
+  created_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type GeoPointDto {
+  type: String!
+  coordinates: [Float!]!
+}
+
+type HashtagEntity {
+  id: String!
+  name: String!
+  created_at: DateTime!
+}
+
+type ImageLocationEntity {
+  id: String!
+  created_at: DateTime!
+}
+
+type ImageReviewEntity {
+  id: String!
+  created_at: DateTime!
+}
+
+type LocationCheckEntity {
+  id: String!
+  status: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+input LocationCreateInputModel {
+  title: String!
+  x: Float!
+  y: Float!
+  description: String!
+  category: String!
+  activities: [String!]!
+  seasons: [String!]!
+  hashtagList: [String!]
+}
+
+input LocationDeleteInputModel {
+  hashtagList: [String!]
+  activities: [String!]
+  seasons: [String!]
+  files: [String!] = []
+}
+
+type LocationEntity {
+  id: String!
+  title: String!
+  description: String!
+  point: GeoPointDto!
+  rating: Float!
+  created_at: DateTime!
+}
+
+type LocationFavoriteModel {
+  id: String!
+  title: String!
+  description: String!
+  point: GeoPointDto!
+  rating: Float!
+  created_at: DateTime!
+  isFavorite: Boolean
+}
+
+type LocationFavorites {
+  locations: [LocationFullModel!]!
+  total: Float!
+}
+
+type LocationFullModel {
+  id: String!
+  title: String!
+  description: String!
+  point: GeoPointDto!
+  rating: Float!
+  created_at: DateTime!
+  isFavorite: Boolean
+  hashtags: [HashtagEntity!]!
+  activities: [ActivityEntity!]!
+  category: CategoryEntity!
+  seasons: [SeasonEntity!]!
+  user: UserEntity!
+  images: [ImageLocationEntity!]!
+}
+
+input LocationPoints {
+  points: [PointDto!]!
+}
+
+type LocationSearchModel {
+  id: String!
+  title: String!
+  description: String!
+  point: GeoPointDto!
+  rating: Float!
+  created_at: DateTime!
+  isFavorite: Boolean
+  hashtags: [HashtagEntity!]!
+  activities: [ActivityEntity!]!
+  category: CategoryEntity!
+  seasons: [SeasonEntity!]!
+  user: UserEntity!
+  images: [ImageLocationEntity!]!
+  score: Float
+}
+
+type LocationSearchResponseModel {
+  locations: [LocationSearchModel!]!
+  total: Float!
+}
+
+input LocationUpdateInputModel {
+  title: String
+  description: String
+  category: String
+  activities: [String!]
+  seasons: [String!]
+  hashtagList: [String!] = []
+}
+
+type Mutation {
+  createLocation(fileList: [Upload!]!, createLocationData: LocationCreateInputModel!): LocationEntity!
+  deleteLocation(id: String!): Void
+  editLocation(fileList: [Upload!], deleteLocationInput: LocationDeleteInputModel!, updateLocationInput: LocationUpdateInputModel!, id: String!): LocationFullModel!
+  addLocationToFavorite(id: String!): LocationFavoriteModel!
+  deleteLocationFavorite(id: String!): LocationFavoriteModel!
+  createReview(fileList: [Upload!]!, isRecommend: Boolean!, locationId: String!, description: String!): ReviewEntity!
+  editReview(fileList: [Upload!], deleteFiles: [String!], isRecommend: Boolean, id: String!, description: String): ReviewEntity
+  deleteReview(id: String!): Void
+  updateRating(sign: Boolean!, id: String!): ReviewEntity
+  locationCheckTake(locationId: String!): Void!
+  locationCheckUpdateStatus(status: String!, locationId: String!): Void!
+  register(user: UserModel!): Void
+  activityCreate(file: Upload!, name: String!): Void
+  activityDelete(id: String!): Void
+}
+
+type MyLocationsModel {
+  locations: [LocationFullModel!]!
+  total: Float!
+}
+
+input PointDto {
+  x: Float!
+  y: Float!
+}
+
+type Query {
+  locations(locationPoints: LocationPoints!): [LocationFullModel!]!
+  locationById(locationId: String!): LocationFullModel
+  search(size: Float!, from: Float!, messageSearch: String, categories: [String!], activities: [String!], seasons: [String!]): LocationSearchResponseModel
+  getMyFavoritesLocations(size: Float!, from: Float!): LocationFavorites!
+  getMyLocations(size: Float!, from: Float!): MyLocationsModel!
+  reviewsByLocation(options: SortOptions!, locationId: String!): ReviewsLocationModel
+  reviewById(reviewId: String!): ReviewFullModel
+  locationCheckById(locationCheckId: String!): LocationCheckEntity
+  locationChecks(statuses: [String!]!, take: Float!, skip: Float!): [LocationCheckEntity!]!
+  activityList: [ActivityEntity!]!
+  activityGetById(id: String!): ActivityEntity!
+  categoryList: [CategoryEntity!]!
+  categoryGetById(id: String!): CategoryEntity!
+  seasonList: [SeasonEntity!]!
+  seasonGetById(id: String!): SeasonEntity!
+}
+
+type ReviewEntity {
+  id: String!
+  description: String!
+  rating: Float!
+  isRecommend: Boolean!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type ReviewFullModel {
+  id: String!
+  description: String!
+  rating: Float!
+  isRecommend: Boolean!
+  created_at: DateTime!
+  updated_at: DateTime!
+  user: UserEntity!
+  location: LocationEntity!
+  images: [ImageReviewEntity!]!
+}
+
+type ReviewsLocationModel {
+  reviews: [ReviewUserRatingModel!]!
+  userReview: ReviewUserRatingModel
+  total: Float!
+}
+
+type ReviewUserRatingModel {
+  id: String!
+  description: String!
+  rating: Float!
+  isRecommend: Boolean!
+  created_at: DateTime!
+  updated_at: DateTime!
+  userRating: UserRating
+  user: UserEntity!
+  images: [ImageReviewEntity!]!
+}
+
+type SeasonEntity {
+  id: String!
+  name: String!
+  code: String!
+  created_at: DateTime!
+}
+
+input SortOptions {
+  field: String = "rating"
+  direction: String = "ASC"
+  skip: Float = 0
+  take: Float = 1
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type UserEntity {
+  id: String!
+  email: String!
+  firstName: String!
+  lastName: String
+  displayName: String
+  password: String
+  verifyToken: String
+  created_at: DateTime!
+}
+
+input UserModel {
+  id: String
+  email: String
+  firstName: String!
+  externalId: String
+  password: String
+  lastName: String
+  displayName: String
+}
+
+type UserRating {
+  sign: Boolean!
+}
+
+"""Represents NULL values"""
+scalar Void
+
